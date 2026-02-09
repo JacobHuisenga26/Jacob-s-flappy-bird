@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #70c5ce;
+        }
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #70c5ce;
+        }
+        .bird {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            background-color: blue;
+            border-radius: 20px;
+        }
+        .obstacle {
+            position: absolute;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="bird" class="bird"></div>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <script>
+        const bird = document.getElementById('bird');
+        const canvas = document.getElementById('gameCanvas');
+        const context = canvas.getContext('2d');
+        const gravity = 0.6;
+        let birdY = 250;
+        let birdVelocity = 0;
+        let obstacles = [];
+        let speed = 3;
+        let score = 0;
+
+        function startGame() {
+            document.addEventListener('keydown', jump);
+            setInterval(updateGame, 20);
+            generateObstacle();
+        }
+
+        function jump() {
+            birdVelocity = -10;
+        }
+
+        function generateObstacle() {
+            let obstacleHeight = Math.random() * 200 + 50;
+            obstacles.push({
+                x: canvas.width,
+                height: obstacleHeight,
+                passed: false
+            });
+            setTimeout(generateObstacle, 2000);
+        }
+
+        function updateGame() {
+            birdVelocity += gravity;
+            birdY += birdVelocity;
+            if (birdY > canvas.height) birdY = canvas.height;
+            bird.style.top = birdY + 'px';
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            obstacles.forEach(obstacle => {
+                obstacle.x -= speed;
+                context.fillStyle = 'red';
+                context.fillRect(obstacle.x, canvas.height - obstacle.height, 50, obstacle.height);
+                
+                if (!obstacle.passed && obstacle.x < bird.offsetLeft) {
+                    score++;
+                    obstacle.passed = true;
+
+                    if (score % 3 === 0) {
+                        speed += 0.5; // Increase speed every 3 obstacles
+                    }
+                }
+            });
+            obstacles = obstacles.filter(obstacle => obstacle.x + 50 > 0);
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
